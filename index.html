@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Investor Login | Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* UI STYLING SESSION */
+    body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background: white; width: 100%; max-width: 400px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 40px 20px; text-align: center; }
+    .content { padding: 30px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+    input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; }
+    input:focus { border-color: #2563eb; ring: 2px #2563eb; }
+    button { width: 100%; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; } /* Added disabled style */
+    .footer-link { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
+    .footer-link a { color: #2563eb; text-decoration: none; font-weight: bold; }
+    #error { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; display: none; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h2 style="margin:0">Investor Login</h2>
+    <p style="margin:5px 0 0; opacity:0.8">Welcome back to InvestPortal</p>
+  </div>
+  <div class="content">
+    <div id="error">❌ Invalid email or password</div>
+    <label>Email Address</label>
+    <input id="email" type="email" placeholder="name@company.com">
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••">
+    
+    <button id="loginBtn" onclick="login()">Login to Dashboard</button>
+    
+    <div class="footer-link">New investor? <a href="signup.html">Create Account</a></div>
+  </div>
+</div>
+
+<script>
+/* CONFIG SESSION */
+const API = "add your app script";
+
+/* LOGIN LOGIC SESSION */
+function login() {
+  const emailInput = document.getElementById("email").value.trim();
+  const passwordInput = document.getElementById("password").value.trim();
+  const loginBtn = document.getElementById("loginBtn");
+  const errorMsg = document.getElementById("error");
+
+  if (!emailInput || !passwordInput) {
+    alert("Please enter both email and password.");
+    return;
+  }
+
+  // --- START LOADING STATE ---
+  loginBtn.innerText = "⏳ Logging in... please wait";
+  loginBtn.disabled = true;
+  errorMsg.style.display = "none";
+
+  const email = encodeURIComponent(emailInput);
+  const password = passwordInput;
+
+  fetch(`${API}?action=login&email=${email}&password=${password}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) { 
+        localStorage.setItem("user", JSON.stringify(data)); 
+        window.location = "dashboard.html"; 
+      } else { 
+        // --- RESET LOADING STATE ON ERROR ---
+        document.getElementById("error").style.display = "block";
+        resetBtn();
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Connection error. Please try again.");
+      resetBtn();
+    });
+}
+
+function resetBtn() {
+  const loginBtn = document.getElementById("loginBtn");
+  loginBtn.innerText = "Login to Dashboard";
+  loginBtn.disabled = false;
+}
+</script>
+</body>
+</html>
